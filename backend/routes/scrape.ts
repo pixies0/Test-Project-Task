@@ -20,21 +20,21 @@ router.get("/", async (req, res) => {
       },
     });
 
-    // Cria uma instância do DOM com o HTML retornado
     const dom = new JSDOM(response.data);
     const document = dom.window.document;
 
     const products: any[] = [];
 
-    const items = document.querySelectorAll("div.s-result-item");
+    const items = document.querySelectorAll("div.s-main-slot div[data-component-type='s-search-result']");
 
     items.forEach((item) => {
-      const title = item.querySelector("h2 a span")?.textContent?.trim();
-      const rating = item.querySelector("i span")?.textContent?.trim();
-      const reviews = item.querySelector(".s-link-style .s-underline-text")?.textContent?.trim();
-      const image = item.querySelector("img")?.getAttribute("src");
+      const rawTitle = item.querySelector("span")?.textContent?.trim();
+      const title = rawTitle?.split(" ").slice(0, 5).join(" ");
 
-      // Só adiciona ao array se tiver título e imagem (para evitar lixo)
+      const image = item.querySelector("img.s-image")?.getAttribute("src");
+      const rating = item.querySelector("span.a-icon-alt")?.textContent?.trim() || null;
+      const reviews = item.querySelector("span.a-size-base.s-underline-text")?.textContent?.trim() || null;
+
       if (title && image) {
         products.push({ title, rating, reviews, image });
       }
