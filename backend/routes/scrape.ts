@@ -6,18 +6,25 @@ const router = Router();
 
 // Rota GET em /api/scrape?keyword=algumaCoisa
 router.get("/", async (req, res) => {
+
   const keyword = req.query.keyword as string;
+  const url = `https://www.amazon.com/s?k=${encodeURIComponent(keyword)}`;
+  const apiKey = '4208dbcf77f131520e0278d93a179bbb';
 
   if (!keyword) {
     return res.status(400).json({ error: "Missing keyword query parameter" });
   }
 
   try {
-    const url = `https://www.amazon.com/s?k=${encodeURIComponent(keyword)}`;
-    const response = await axios.get(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0", // ajuda a não ser bloqueado
+
+    const response = await axios.get(`http://api.scraperapi.com`, {
+      params: {
+        api_key: apiKey,
+        url: url
       },
+      headers: {
+        'User-Agent': 'Mozilla/5.0' // ajuda a evitar bloqueio adicional
+      }
     });
 
     const dom = new JSDOM(response.data);
